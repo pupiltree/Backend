@@ -161,7 +161,7 @@ app.get("/grades/:gradeId/sections/:sectionName/subjects/:subjectBoard/:subjectN
         }
 
         // Respond with the chapter data
-        res.json(chapter);
+        res.json(chapter.periods);
 
     } catch (error) {
         res.status(500).json({ error: error.message });
