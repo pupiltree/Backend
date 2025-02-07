@@ -1,7 +1,7 @@
 require("dotenv").config();  // Load environment variables
 
 const express = require("express");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,8 +36,8 @@ app.get("/grades", async (req, res) => {
 app.get("/grades/:gradeId/sections", async (req, res) => {
     const { gradeId } = req.params;  // Extract the gradeId from the URL parameters
     try {
-        // Fetch the grade document based on gradeId
-        const grade = await db.collection("lesson_script").findOne({ "_id": new MongoClient.ObjectId(gradeId) });
+        // Ensure gradeId is passed as a valid string representing ObjectId
+        const grade = await db.collection("lesson_script").findOne({ "_id": new ObjectId(gradeId) });
 
         if (!grade) {
             return res.status(404).json({ message: "Grade not found" });
@@ -53,17 +53,6 @@ app.get("/grades/:gradeId/sections", async (req, res) => {
         // Respond with the sections data
         const sectionData = sections.map(section => ({
             sectionName: section.section,
-            subjects: section.subjects.map(subject => ({
-                subjectName: subject.name,
-                board: subject.board,
-                chapters: subject.chapters.map(chapter => ({
-                    chapterName: chapter.name,
-                    periods: chapter.periods.map(period => ({
-                        period: period.period,
-                        script: period.script
-                    }))
-                }))
-            }))
         }));
 
         res.json(sectionData);
@@ -71,5 +60,4 @@ app.get("/grades/:gradeId/sections", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
