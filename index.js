@@ -60,4 +60,44 @@ app.get("/grades/:gradeId/sections", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+app.get("/grades/:gradeId/sections/:sectionName", async (req, res) => {
+    const { gradeId, sectionName } = req.params;  // Extract gradeId and sectionName from the URL parameters
+    try {
+        // Ensure gradeId is passed as a valid string representing ObjectId
+        const grade = await db.collection("lesson_script").findOne({ "_id": new ObjectId(gradeId) });
+
+        if (!grade) {
+            return res.status(404).json({ message: "Grade not found" });
+        }
+
+        // Find the section within the grade document that matches the sectionName
+        const section = grade.sections.find(sec => sec.section === sectionName);
+
+        if (!section) {
+            return res.status(404).json({ message: `Section '${sectionName}' not found for this grade` });
+        }
+
+        // Respond with the section data (you can add more data depending on your structure)
+        const sectionData = {
+            sectionName: section.section,
+            subjects: section.subjects.map(subject => ({
+                subjectName: subject.name,
+                board: subject.board,
+                chapters: subject.chapters.map(chapter => ({
+                    chapterName: chapter.name,
+                    periods: chapter.periods.map(period => ({
+                        period: period.period,
+                        script: period.script
+                    }))
+                }))
+            }))
+        };
+
+        res.json(sectionData);  // Return the section data in the response
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
