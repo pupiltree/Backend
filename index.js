@@ -126,47 +126,41 @@ app.get("/grades/:gradeId/sections/:sectionName/subjects/:subjectBoard/:subjectN
         res.status(500).json({ error: error.message });
     }
 });
-app.get("/grades/:gradeId/sections/:sectionName/subjects/:subjectBoard/:subjectName/chapters/:chapterName", async (req, res) => {
-    const { gradeId, sectionName, subjectBoard, subjectName, chapterName } = req.params; // Extract parameters
-
+app.get("/grades/:gradeId/sections/:sectionName/subjects/:subjectBoard/:subjectName/chapters/:chapterName/periods", async (req, res) => {
+    const { gradeId, sectionName, subjectBoard, subjectName, chapterName } = req.params;
+    
     try {
-        // Ensure gradeId is a valid ObjectId
+        // Decode the chapter name (handles spaces and special characters)
+        const decodedChapterName = decodeURIComponent(chapterName);
+
         const grade = await db.collection("lesson_script").findOne({ "_id": new ObjectId(gradeId) });
 
         if (!grade) {
             return res.status(404).json({ message: "Grade not found" });
         }
 
-        // Find the section within the grade document
         const section = grade.sections.find(sec => sec.section === sectionName);
-
         if (!section) {
             return res.status(404).json({ message: `Section '${sectionName}' not found` });
         }
 
-        // Find the subject within the section
-        const subject = section.subjects.find(
-            subj => subj.name === subjectName && subj.board === subjectBoard
-        );
-
+        const subject = section.subjects.find(subj => subj.name === subjectName && subj.board === subjectBoard);
         if (!subject) {
             return res.status(404).json({ message: `Subject '${subjectName}' with board '${subjectBoard}' not found` });
         }
 
-        // Find the chapter within the subject
-        const chapter = subject.chapters.find(chap => chap.name === chapterName);
-
+        const chapter = subject.chapters.find(chap => chap.name === decodedChapterName);
         if (!chapter) {
-            return res.status(404).json({ message: `Chapter '${chapterName}' not found` });
+            return res.status(404).json({ message: `Chapter '${decodedChapterName}' not found` });
         }
 
-        // Respond with the chapter data
-        res.json(chapter.periods);
-
+        // Respond with periods for the found chapter
+        res.json(chapter.periods || []);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 
 
