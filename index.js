@@ -84,13 +84,7 @@ app.get("/grades/:gradeId/sections/:sectionName", async (req, res) => {
             subjects: section.subjects.map(subject => ({
                 subjectName: subject.name,
                 board: subject.board,
-                chapters: subject.chapters.map(chapter => ({
-                    chapterName: chapter.name,
-                    periods: chapter.periods.map(period => ({
-                        period: period.period,
-                        script: period.script
-                    }))
-                }))
+                
             }))
         };
 
