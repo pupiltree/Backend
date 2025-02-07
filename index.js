@@ -92,4 +92,40 @@ app.get("/grades/:gradeId/sections/:sectionName", async (req, res) => {
     }
 });
 
+app.get("/grades/:gradeId/sections/:sectionName/subjects/:subjectBoard/:subjectName", async (req, res) => {
+    const { gradeId, sectionName, subjectBoard, subjectName } = req.params; // Extracting parameters from the URL
+
+    try {
+        // Ensure gradeId is a valid ObjectId
+        const grade = await db.collection("lesson_script").findOne({ "_id": new ObjectId(gradeId) });
+
+        if (!grade) {
+            return res.status(404).json({ message: "Grade not found" });
+        }
+
+        // Find the section within the grade document
+        const section = grade.sections.find(sec => sec.section === sectionName);
+
+        if (!section) {
+            return res.status(404).json({ message: `Section '${sectionName}' not found` });
+        }
+
+        // Find the subject within the section
+        const subject = section.subjects.find(
+            subj => subj.name === subjectName && subj.board === subjectBoard
+        );
+
+        if (!subject) {
+            return res.status(404).json({ message: `Subject '${subjectName}' with board '${subjectBoard}' not found` });
+        }
+
+        // Respond with only the chapters
+        res.json(subject.chapters || []); // Return chapters or an empty array if none exist
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
