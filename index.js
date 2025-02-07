@@ -79,14 +79,12 @@ app.get("/grades/:gradeId/sections/:sectionName", async (req, res) => {
         }
 
         // Respond with the section data (you can add more data depending on your structure)
-        const sectionData = {
-            sectionName: section.section,
-            subjects: section.subjects.map(subject => ({
+        const sectionData =  section.subjects.map(subject => ({
                 subjectName: subject.name,
                 board: subject.board,
                 
-            }))
-        };
+            }));
+        
 
         res.json(sectionData);  // Return the section data in the response
     } catch (error) {
