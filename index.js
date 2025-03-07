@@ -161,7 +161,15 @@ app.get("/grades/:gradeId/sections/:sectionName/subjects/:subjectBoard/:subjectN
     }
 });
 
-
+cron.schedule('*/10 * * * *', function() {
+    axios.get('https://backend-jpaq.onrender.com')
+      .then(function (response) {
+        console.log('Self ping successful');
+      })
+      .catch(function (error) {
+        console.log('Self ping failed: ', error);
+      });
+  });
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
