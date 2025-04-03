@@ -6,7 +6,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
-
+var cron = require('node-cron');
 const client = new MongoClient(MONGO_URI);
 let db;
 
@@ -161,8 +161,9 @@ app.get("/grades/:gradeId/sections/:sectionName/subjects/:subjectBoard/:subjectN
     }
 });
 
+
 cron.schedule('*/10 * * * *', function() {
-    axios.get('https://backend-jpaq.onrender.com')
+    axios.get("https://backend-jpaq.onrender.com")
       .then(function (response) {
         console.log('Self ping successful');
       })
@@ -170,6 +171,5 @@ cron.schedule('*/10 * * * *', function() {
         console.log('Self ping failed: ', error);
       });
   });
-
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
