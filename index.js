@@ -11,7 +11,11 @@ var cron = require('node-cron');
 const client = new MongoClient(MONGO_URI);
 let db;
 
-app.use(cors())
+app.use(cors({
+  origin: '*', // your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true // if you're sending cookies or auth headers
+}));
 
 client.connect().then(() => {
     db = client.db("flashcard_game");
