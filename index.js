@@ -12,13 +12,13 @@ const client = new MongoClient(MONGO_URI);
 let db;
 
 app.use(cors({
-  origin: '*', // Allows all origins
+  origin: 'http://localhost:8080', // Allows all origins
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specifies allowed HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Specifies allowed headers
 }));
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); // or specific domain
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080'); // or specific domain
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
