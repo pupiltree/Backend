@@ -8,14 +8,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI;
 var cron = require('node-cron');
+const { default: cors } = require("cors");
+const { app } = require("../../Backend/Alumni Portal backend");
 const client = new MongoClient(MONGO_URI);
 let db;
 
 app.use(cors({
-  origin: '*', // your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true // if you're sending cookies or auth headers
+  origin: '*', // Allows all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specifies allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specifies allowed headers
 }));
+
+
 
 client.connect().then(() => {
     db = client.db("flashcard_game");
