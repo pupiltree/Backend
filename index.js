@@ -11,18 +11,15 @@ var cron = require('node-cron');
 const client = new MongoClient(MONGO_URI);
 let db;
 
-app.use(cors({
-  origin: 'http://localhost:8080', // Allows all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specifies allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Specifies allowed headers
-}));
+const corsOptions = {
+  origin: 'http://localhost:8080', // Add all frontend origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // If using cookies or auth
+};
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080'); // or specific domain
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+app.use(cors(corsOptions));
+
 
 
 client.connect().then(() => {
