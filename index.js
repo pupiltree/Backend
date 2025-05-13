@@ -17,6 +17,14 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'], // Specifies allowed headers
 }));
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*'); // or specific domain
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
+
 client.connect().then(() => {
     db = client.db("flashcard_game");
     console.log("Connected to MongoDB");
