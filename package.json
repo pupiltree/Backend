@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/pupiltree/Backend#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "cron": "^4.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

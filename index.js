@@ -2,6 +2,7 @@ require("dotenv").config();  // Load environment variables
 
 const express = require("express");
 const { MongoClient, ObjectId } = require('mongodb');
+const cors = require('cors')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,6 +10,8 @@ const MONGO_URI = process.env.MONGO_URI;
 var cron = require('node-cron');
 const client = new MongoClient(MONGO_URI);
 let db;
+
+app.use(cors())
 
 client.connect().then(() => {
     db = client.db("flashcard_game");
