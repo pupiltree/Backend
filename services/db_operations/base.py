@@ -8,5 +8,6 @@ MONGO_URI = os.getenv("MONGO_URI")
 
 # MongoDB Connection
 client = MongoClient(MONGO_URI)
-db = client["flashcard_game"]
+db = client["mentor_tree"]
 user_collection = db["users"]
+db = client['teacher_timeline']
