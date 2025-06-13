@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pymongo.errors import PyMongoError
 
-from models.user import find_user_by_email, create_user, update_user_role, bind_code, get_code
+from models.role import TEACHER
+from models.user import find_user_by_email, create_user, update_user_role, bind_code, get_code, find_user_by_uid, \
+    serialize_mongo_document
 from services.auth.token import create_access_token, verify_token
 from services.db_operations.user_db import UserBase, LoginUser, RoleUpdate, CodeBind
 
@@ -18,13 +20,19 @@ def register_user(user: UserBase):
         if find_user_by_email(user.email):
             raise HTTPException(status_code=400, detail="User already exists")
 
-        user_data = user.model_dump()
-        user_data["role"] = "teacher"  # Set default role to 'teacher'
+        user_data = user.dict()  # Set default role to 'teacher'
+        user_data["role"] = TEACHER
 
         user_id = create_user(user_data)
         return {"msg": "User registered", "user_id": str(user_id)}
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+    except Exception as e:
+        print("Unhandled error:", e)  # 👈 Log it for debugging
+        import traceback
+        traceback.print_exc()  # 👈 See full traceback in console
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # Login user
@@ -95,5 +103,14 @@ def get_code_from_smartBoard(user_id: str = Depends(get_current_user)):
     try:
         code = get_code(user_id)
         return {"code": code or ""}
+    except PyMongoError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@router.get("/user-details/{uid}")
+def get_user_details(uid: str):
+    try:
+        user = find_user_by_uid(uid)
+        return serialize_mongo_document(user)
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

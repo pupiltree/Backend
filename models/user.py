@@ -23,6 +23,21 @@ def find_user_by_id(user_id):
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
+
+def find_user_by_uid(uid):
+    try:
+        user = user_collection.find_one({"uid": uid})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+    except PyMongoError as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+def serialize_mongo_document(document: dict):
+    document["_id"] = str(document["_id"])
+    return document
+
 def create_user(user_data):
     try:
         result = user_collection.insert_one(user_data)
